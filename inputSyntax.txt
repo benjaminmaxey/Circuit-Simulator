@@ -1,0 +1,13 @@
+Declaring Nodes: [NodeType]
+Connecting Nodes: [input ID] [output ID] (ID = order in node declaration)
+
+This example creates two inputs connected to an AND gate, which is connected to
+an output:
+
+IN
+IN
+AND
+OUT
+1 3
+2 3
+3 4
