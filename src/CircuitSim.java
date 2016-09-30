@@ -1,3 +1,9 @@
+//*****************************************************************************
+//	Author: Ben Maxey
+//
+//	Driver code for circuit simulator.
+//*****************************************************************************
+
 package circuitsim;
 
 import java.util.ArrayList;
@@ -8,13 +14,21 @@ public class CircuitSim
 {
 	public static void main(String[] args) throws FileNotFoundException
 	{
-		DAG test = new DAG();
-		test.initialize("example.csim");
-		test.simulate();
+		if (args.length < 2)
+		{
+			System.err.println("At least two input files required.");
+			return;
+		}
 
-		ArrayList<Boolean> results = test.getOutputs();
+		DAG test = new DAG(args[0]);
+		Simulator sim = new Simulator(test, args[1]);
+		System.out.println(args[0] + ": ");
 
-		for (int i = 0; i < results.size(); i++)
-			System.out.println(results.get(i));
+		test.clear();
+		test.build();
+		test.initialize();
+
+		sim.initialize();
+		sim.run();
 	}
 }

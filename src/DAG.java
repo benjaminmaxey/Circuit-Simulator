@@ -13,9 +13,11 @@ import java.io.*;
 
 public class DAG
 {
+	private String filePath;
 	private ArrayList<DAGNode> nodeList;
 	private ArrayList<Integer> inputs;
 	private ArrayList<Integer> outputs;
+	private int maxDelay;
 
 	//Default constructor.
 	public DAG()
@@ -25,9 +27,24 @@ public class DAG
 		outputs = new ArrayList<Integer>();
 	}
 
+	public DAG(String file)
+	{
+		nodeList = new ArrayList<DAGNode>();
+		inputs = new ArrayList<Integer>();
+		outputs = new ArrayList<Integer>();
+		filePath = file;
+	}
+
+	public void clear()
+	{
+		nodeList.clear();
+		inputs.clear();
+		outputs.clear();
+	}
+
 	//Initializes the DAG based on specifications listed in a text file. This
 	//method takes the path to the specification file as a parameter.
-	public void initialize(String filePath) throws FileNotFoundException
+	public void build() throws FileNotFoundException
 	{
 		File file = new File(filePath);
 		Scanner scan = new Scanner(file);
@@ -85,9 +102,24 @@ public class DAG
 		scan.close();
 	}
 
+	//Returns the maximum delay of all nodes in the graph.
+	public int getMaxDelay()
+	{
+		int max = 0;
+
+		for (int i = 0; i < nodeList.size(); i++)
+		{
+			int current = nodeList.get(i).getDelay();
+			if (current > max)
+				max = current;
+		}
+
+		return max;
+	}
+
 	//Simulates the logic circuit. After running this method, all output nodes
 	//should have their correct values.
-	public void simulate()
+	public void initialize()
 	{
 		//ArrayList holds indices of nodes that have not calculated and sent
 		//outputs.
@@ -97,7 +129,10 @@ public class DAG
 
 		//Begin by sending all input values to their connecting edges.
 		for (int i = 0; i < inputs.size(); i++)
-			nodeList.get(inputs.get(i)).send();
+		{
+			nodeList.get(inputs.get(i)).update();
+			nodeList.get(inputs.get(i)).sendOutput();
+		}
 		for (int i = 0; i < inputs.size(); i++)
 			remaining.remove(Integer.valueOf(inputs.get(i)));
 
@@ -106,13 +141,30 @@ public class DAG
 		{
 			for (int i = 0; i < remaining.size(); i++)
 			{
-				if (nodeList.get(remaining.get(i)).send())
+				if (nodeList.get(remaining.get(i)).update())
 				{
+					nodeList.get(remaining.get(i)).sendOutput();
 					System.out.println("Node: " + (remaining.get(i) + 1) + ", Output: " + nodeList.get(remaining.get(i)).getOutput());
 					remaining.remove(i);
 				}
 			}
 		}
+	}
+
+	//Changes the value of an input node.
+	public void setInput(int id, Boolean value)
+	{
+		DAGNode current = nodeList.get(id);
+		if (current.getType() != NodeType.IN)
+			return;
+
+		current.setInput(value);
+	}
+
+	//Allows access to a node in the graph.
+	public DAGNode get(int id)
+	{
+		return nodeList.get(id);
 	}
 
 	//Returns an ArrayList with the values of all output nodes.

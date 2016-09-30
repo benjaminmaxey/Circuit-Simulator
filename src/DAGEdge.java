@@ -66,4 +66,16 @@ public class DAGEdge
 	{
 		end = output;
 	}
+
+	//Returns the base node.
+	public DAGNode getBase()
+	{
+		return base;
+	}
+
+	//Returns the end node.
+	public DAGNode getEnd()
+	{
+		return end;
+	}
 }

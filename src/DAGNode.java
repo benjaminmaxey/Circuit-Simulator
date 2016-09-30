@@ -19,8 +19,7 @@ public class DAGNode
 	private ArrayList<DAGEdge> outputs;
 	private ArrayList<Boolean> inValues;
 	private Boolean outValue;
-
-	private int delay;
+	private int delay = 1;
 
 	//Default constructor.
 	public DAGNode()
@@ -49,6 +48,13 @@ public class DAGNode
 		outputs = new ArrayList<DAGEdge>();
 		inValues = null;
 		outValue = value;
+		delay = 0;
+	}
+
+	//Removes all stored inValues. Used when updating output.
+	public void clear()
+	{
+		inValues.clear();
 	}
 
 	//Sets output value for IN DAGNodes.
@@ -66,9 +72,29 @@ public class DAGNode
 		return outValue;
 	}
 
-	//Load the values of each input DAGEdge into the ArrayList inValues.
-	private void loadInputs()
+	//Sets delay to the given value.
+	public void setDelay(int time)
 	{
+		delay = time;
+	}
+
+	//Returns nType.
+	public NodeType getType()
+	{
+		return nType;
+	}
+
+	//Returns delay.
+	public int getDelay()
+	{
+		return delay;
+	}
+
+	//Load the values of each input DAGEdge into the ArrayList inValues.
+	public void loadInputs()
+	{
+		inValues.clear();
+		
 		if (nType == NodeType.IN)
 		{
 			System.err.println("Cannot load inputs of an input node.");
@@ -81,7 +107,7 @@ public class DAGNode
 
 	//Computes the value of the node's output value based on its input values
 	//and its logic function (specified by its NodeType).
-	private void computeOutput()
+	public void computeOutput()
 	{
 		switch (nType)
 		{
@@ -191,7 +217,7 @@ public class DAGNode
 	}
 
 	//Sends the output value to each connected output DAGEdge.
-	private void sendOutput()
+	public void sendOutput()
 	{
 		if (nType == NodeType.OUT)
 			return;
@@ -202,13 +228,10 @@ public class DAGNode
 
 	//If all inputs are determined, calculates output and send it to output
 	//edges. Returns false if an input is not yet determined.
-	public Boolean send()
+	public Boolean update()
 	{
 		if (nType == NodeType.IN)
-		{
-			sendOutput();
 			return true;
-		}
 
 		//Check for undetermined inputs.
 		for (int i = 0; i < inputs.size(); i++)
@@ -219,7 +242,6 @@ public class DAGNode
 
 		loadInputs();
 		computeOutput();
-		sendOutput();
 
 		return true;
 	}
@@ -254,5 +276,17 @@ public class DAGNode
 
 		for (int i = 0; i < output.size(); i++)
 			output.get(i).connectInput(this);
+	}
+
+	//Returns input edges.
+	public ArrayList<DAGEdge> getInputs()
+	{
+		return inputs;
+	}
+
+	//Returns output edges.
+	public ArrayList<DAGEdge> getOutputs()
+	{
+		return outputs;
 	}
 }

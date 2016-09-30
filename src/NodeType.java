@@ -2,7 +2,7 @@
 //	Author: Ben Maxey
 //
 //	NodeType enumerates all of the possibilities for the types of DAGNodes.
-//	It also includes a method that converts Strings to NodeType values.
+//	It also includes methods that convert between Strings and NodeTypes.
 //*****************************************************************************
 
 package circuitsim;
@@ -33,8 +33,32 @@ public enum NodeType
 			case "XOR":
 				return XOR;
 			default:
-				System.err.println("String did not match any NodeType.");
 				return NULL;
+		}
+	}
+
+	static public String toString(NodeType type)
+	{
+		switch(type)
+		{
+			case IN:
+				return "IN";
+			case OUT:
+				return "OUT";
+			case NOT:
+				return "NOT";
+			case AND:
+				return "AND";
+			case OR:
+				return "OR";
+			case NAND:
+				return "NAND";
+			case NOR:
+				return "NOR";
+			case XOR:
+				return "XOR";
+			default:
+				return "NULL";
 		}
 	}
 }
