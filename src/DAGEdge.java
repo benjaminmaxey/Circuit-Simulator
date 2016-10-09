@@ -11,6 +11,7 @@ package circuitsim;
 
 public class DAGEdge
 {
+	private String id;
 	private Boolean level;
 	private Boolean determined;
 	private DAGNode base;

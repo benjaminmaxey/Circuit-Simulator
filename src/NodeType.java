@@ -9,28 +9,30 @@ package circuitsim;
 
 public enum NodeType 
 {
-	IN, OUT, NOT, AND, OR, NAND, NOR, XOR, NULL;
+	IN, OUT, BUF, NOT, AND, OR, NAND, NOR, XOR, NULL;
 
 	//Converts a String to its corresponding NodeType.
 	static public NodeType matchString(String type)
 	{
 		switch(type)
 		{
-			case "IN":
+			case "input":
 				return IN;
-			case "OUT":
+			case "output":
 				return OUT;
-			case "NOT":
+			case "buf":
+				return BUF;
+			case "not":
 				return NOT;
-			case "AND":
+			case "and":
 				return AND;
-			case "OR":
+			case "or":
 				return OR;
-			case "NAND":
+			case "nand":
 				return NAND;
-			case "NOR":
+			case "nor":
 				return NOR;
-			case "XOR":
+			case "xor":
 				return XOR;
 			default:
 				return NULL;
@@ -42,23 +44,25 @@ public enum NodeType
 		switch(type)
 		{
 			case IN:
-				return "IN";
+				return "input";
 			case OUT:
-				return "OUT";
+				return "output";
+			case BUF:
+				return "buf";
 			case NOT:
-				return "NOT";
+				return "not";
 			case AND:
-				return "AND";
+				return "and";
 			case OR:
-				return "OR";
+				return "or";
 			case NAND:
-				return "NAND";
+				return "nand";
 			case NOR:
-				return "NOR";
+				return "nor";
 			case XOR:
-				return "XOR";
+				return "xor";
 			default:
-				return "NULL";
+				return "null";
 		}
 	}
 }

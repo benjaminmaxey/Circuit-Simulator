@@ -14,11 +14,14 @@ import java.util.ArrayList;
 
 public class DAGNode
 {
+	private String id;
 	private NodeType nType;
 	private ArrayList<DAGEdge> inputs;
 	private ArrayList<DAGEdge> outputs;
 	private ArrayList<Boolean> inValues;
 	private Boolean outValue;
+	private int riseDel;
+	private int fallDel;
 	private int delay = 1;
 
 	//Default constructor.
@@ -94,7 +97,7 @@ public class DAGNode
 	public void loadInputs()
 	{
 		inValues.clear();
-		
+
 		if (nType == NodeType.IN)
 		{
 			System.err.println("Cannot load inputs of an input node.");
