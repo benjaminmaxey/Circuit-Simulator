@@ -7,28 +7,35 @@ import java.io.*;
 public class Simulator
 {
 	private String filePath;
+
 	private ArrayList<ArrayList<Event>> wheel;
-	private DAG graph;
+	private Circuit circuit;
+
 	private int wheelLength;
 	private int current;
 	private int t = -1;
 
 	public Simulator()
 	{
-		wheel = null;
-		graph = null;
+		filePath = "";
+
+		wheel = new ArrayList<ArrayList<Event>>();
+		circuit = null;
+
 		wheelLength = 0;
 		current = 0;
 	}
 
-	public Simulator(DAG circuit, String file)
+	public Simulator(Circuit cir, String file)
 	{
 		filePath = file;
-		graph = circuit;
-		wheelLength = graph.getMaxDelay() + 3;
+
+		circuit = cir;
+		wheelLength = circuit.getMaxDelay() + 3;
 		wheel = new ArrayList<ArrayList<Event>>();
 		for (int i = 0; i < wheelLength; i++)
 			wheel.add(new ArrayList<Event>());
+
 		current = 0;
 	}
 
@@ -37,28 +44,19 @@ public class Simulator
 		File file = new File(filePath);
 		Scanner scan = new Scanner(file);
 
-		try
-		{
-			while (scan.hasNextLine())
-			{
-				int id = scan.nextInt() - 1;
-				int set = scan.nextInt();
-				Boolean value = (set > 0);
+		scan.useDelimiter(" ");
+		int time = scan.nextInt();
 
-				graph.setInput(id, value);
-				wheel.get(current).add(new Event(graph.get(id), 0));
-			}
-		}
-		catch (Exception e)
+		while (scan.hasNextLine())
 		{
-			e.printStackTrace();
-		}
-	}
+			String id = scan.next();
+			Boolean value = (scan.nextInt() > 0);
 
-	public void schedule(Event next)
-	{
-		int delay = next.getDelay();
-		wheel.get((current + delay) % wheelLength).add(next);
+			Node node = circuit.find(id);
+			Event event = new Event(node, value);
+
+			wheel.get(time % wheelLength).add(event);
+		}
 	}
 
 	public void run()
@@ -80,20 +78,64 @@ public class Simulator
 			}
 
 			ArrayList<Event> eventList = wheel.get(current);
+			int numEvents = eventList.size();
 			while (eventList.size() > 0)
 			{
-				for (int i = 0; i < eventList.size(); i++)
+				Node currentNode = eventList.get(0).target;
+				Boolean newValue = eventList.get(0).value;
+				currentNode.update(newValue);
+
+				System.out.println("\tNode " + currentNode.getID() +
+					" transitions to " + newValue);
+
+				ArrayList<Node> fanout = currentNode.getOutputs();
+				for (int i = 0; i < fanout.size(); i++)
 				{
-					ArrayList<Event> newEvents = eventList.get(i).run();
-					for (int j = 0; j < newEvents.size(); j++)
-						schedule(newEvents.get(i));
-					eventList.remove(0);
+					Node currFanout = fanout.get(i);
+					if (!currFanout.loadInputs())
+						continue;
+					Boolean potentialVal = currFanout.computeOutput();
+
+					if (currFanout.lastSchedVal != potentialVal)
+					{
+						int delay;
+
+						if (potentialVal)
+							delay = currFanout.riseDel;
+						else
+							delay = currFanout.fallDel;
+
+						int schedTime = (current + delay) % wheelLength;
+						if (currFanout.lastSchedTime == schedTime)
+							cancel(currFanout, schedTime);
+
+						wheel.get(schedTime).add(new Event(currFanout, potentialVal));
+						currFanout.lastSchedVal = potentialVal;
+						currFanout.lastSchedTime = schedTime;
+					}
 				}
+
+				eventList.remove(0);
 			}
+			System.out.println("\n\tTotal number of transitions: " + numEvents);
+			System.out.println();
 
 			if (++current == wheelLength)
 				current = 0;
 			done = wheelLength;
+		}
+	}
+
+	public void cancel(Node target, int time)
+	{
+		ArrayList<Event> potential = wheel.get(time);
+		String matchID = target.getID();
+
+		for (int i = 0; i < potential.size(); i++)
+		{
+			String id = potential.get(i).target.getID();
+			if (id.equals(matchID))
+				potential.remove(i);
 		}
 	}
 }

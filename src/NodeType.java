@@ -9,7 +9,7 @@ package circuitsim;
 
 public enum NodeType 
 {
-	IN, OUT, BUF, NOT, AND, OR, NAND, NOR, XOR, NULL;
+	IN, OUT, WIRE, BUF, NOT, AND, OR, NAND, NOR, XOR, NULL;
 
 	//Converts a String to its corresponding NodeType.
 	static public NodeType matchString(String type)
@@ -20,6 +20,8 @@ public enum NodeType
 				return IN;
 			case "output":
 				return OUT;
+			case "wire":
+				return WIRE;
 			case "buf":
 				return BUF;
 			case "not":
@@ -47,6 +49,8 @@ public enum NodeType
 				return "input";
 			case OUT:
 				return "output";
+			case WIRE:
+				return "wire";
 			case BUF:
 				return "buf";
 			case NOT:

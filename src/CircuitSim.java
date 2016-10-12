@@ -14,20 +14,9 @@ public class CircuitSim
 {
 	public static void main(String[] args) throws FileNotFoundException
 	{
-		if (args.length < 2)
-		{
-			System.err.println("At least two input files required.");
-			return;
-		}
-
-		DAG test = new DAG(args[0]);
-		Simulator sim = new Simulator(test, args[1]);
-		System.out.println(args[0] + ": ");
-
-		test.clear();
+		Circuit test = new Circuit("testCircuits/ISCAS85/c432.v");
 		test.build();
-		test.initialize();
-
+		Simulator sim = new Simulator(test, "sampleSimulation.txt");
 		sim.initialize();
 		sim.run();
 	}
